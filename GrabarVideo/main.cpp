@@ -9,15 +9,16 @@ using namespace cv;
 using namespace std;
 
 int main(int argc, char* argv[]) {
-  Mat frame;
+  Mat frame, roi;
   VideoCapture cap;
   cap.open(0);
-
   if (!cap.isOpened()) {
     printf("Error opening cam\n");
     return -1;
   }
   namedWindow("Frame");
+  namedWindow("ROI");
+  Rect rect(400, 100, 200, 200);
 
   int frame_width = cap.get(CAP_PROP_FRAME_WIDTH);
   int frame_height = cap.get(CAP_PROP_FRAME_HEIGHT);
@@ -27,10 +28,14 @@ int main(int argc, char* argv[]) {
 
   while (true) {
     cap >> frame;
+    flip(frame, frame, 1);
     imshow("Frame", frame);
 
-    video.write(frame);
+    frame(rect).copyTo(roi);
+    rectangle(frame, rect, Scalar(255, 0, 0));
 
+    imshow("ROI", roi);
+    video.write(frame);
     int c = waitKey(40);
     if ((char)c == 'q') break;
   }
